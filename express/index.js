@@ -1,23 +1,22 @@
 const express = require('express');
 const path = require('path');
-const moment = require('moment');
-const users = require('./Users');
+const logger = require('./middleware/logger');
+const router = require('./routes/api/users');
 
 const app = express();
 
-// every time there is a req, logger will run
-const logger = (req, res, next) => {
-  console.log(req);
-  next();
-}
-
 // init middleware
-app.use(logger);
+// app.use(logger);
 
-app.get('/api/users', (__, res) => res.json(users)); 
+// body parser middleware - use for post data
+app.use(express.json());
+// If extended is false, you can not post "nested object"
+app.use(express.urlencoded({ extended: false }));
 
 //set static folder
 app.use(express.static(path.join(__dirname, 'public')));
+
+app.use('/api/users', router);
 
 // process.env - to have an access during deploying
 const PORT = process.env.PORT || 5000;
